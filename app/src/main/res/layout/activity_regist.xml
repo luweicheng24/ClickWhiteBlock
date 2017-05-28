@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/rl_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/login_background"
+
+    >
+
+    <ScrollView
+        android:id="@+id/sv"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+      >
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tv_welcome"
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:allowUndo="true"
+                android:gravity="center"
+                android:text="注册"
+                android:textColor="#ffff"
+                android:textSize="40sp" />
+
+            <EditText
+                android:id="@+id/et_reg_name"
+                android:layout_width="250dp"
+                android:layout_height="45dp"
+                android:layout_below="@+id/tv_welcome"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="20dp"
+                android:background="@drawable/login_shape"
+                android:gravity="center"
+                android:hint="手机号/昵称/邮箱"
+                android:paddingLeft="20dp"
+                android:textColor="#fff"
+                android:textColorHint="#cccc"
+                android:textSize="15sp" />
+
+            <EditText
+                android:id="@+id/et_reg_psw"
+                android:layout_width="250dp"
+                android:layout_height="45dp"
+                android:layout_alignStart="@+id/et_reg_name"
+                android:layout_below="@+id/et_reg_name"
+                android:layout_marginTop="30dp"
+                android:background="@drawable/login_shape"
+                android:gravity="center"
+                android:hint="输入六位数字密码"
+                android:inputType="numberPassword"
+                android:paddingLeft="20dp"
+
+                android:textColor="@color/colorWhite"
+                android:textColorHint="#cccc"
+                android:textSize="15sp" />
+
+            <Button
+                android:id="@+id/but_regist"
+                android:layout_width="250dp"
+                android:layout_height="45dp"
+                android:layout_below="@+id/et_reg_psw"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="40dp"
+                android:background="@drawable/but_login_shape"
+                android:text="注册"
+                android:textAllCaps="false"
+                android:textColor="#fff"
+                android:textSize="15sp" />
+
+
+        </LinearLayout>
+    </ScrollView>
+</RelativeLayout>

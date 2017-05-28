@@ -1,4 +1,4 @@
-package com.gsww.www.clickwhiteblock;
+package com.gsww.www.clickwhiteblock.bean;
 
 import android.graphics.RectF;
 
@@ -6,7 +6,7 @@ import android.graphics.RectF;
  * Author   : luweicheng on 2017/4/30 0030 12:16
  * E-mail   ：1769005961@qq.com
  * GitHub   : https://github.com/luweicheng24
- * funcation:
+ * funcation: 矩形框类
  */
 
 public class PiecesRectF extends RectF {

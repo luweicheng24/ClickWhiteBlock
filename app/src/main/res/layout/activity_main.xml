@@ -4,11 +4,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-
    >
 
-   <com.gsww.www.clickwhiteblock.StiackBlockView
+   <com.gsww.www.clickwhiteblock.view.StiackBlockView
         android:layout_width="match_parent"
+       android:background="@drawable/background_02"
         android:layout_height="match_parent"
         android:id="@+id/write_pieces"/>
 

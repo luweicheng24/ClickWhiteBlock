@@ -1,4 +1,4 @@
-package com.gsww.www.clickwhiteblock;
+package com.gsww.www.clickwhiteblock.view;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -11,20 +11,25 @@ import android.util.SparseArray;
 import android.view.MotionEvent;
 import android.view.View;
 
+import com.gsww.www.clickwhiteblock.bean.PiecesRectF;
+import com.gsww.www.clickwhiteblock.utils.L;
+import com.gsww.www.clickwhiteblock.utils.SoundUtils;
+
 import static android.view.MotionEvent.ACTION_DOWN;
 
 /**
  * Author   : luweicheng on 2017/4/30 0030 13:50
  * E-mail   ：1769005961@qq.com
  * GitHub   : https://github.com/luweicheng24
- * funcation:
+ * funcation: 自定义踩白块的ViewGroup
  */
 
 public class StiackBlockView extends View {
+
     public static final int SPEED_PRIMARY = 5;//初级速度
-    public static final int SPEED_MIDDLE = 7;//中级速度
-    public static final int SPEED_HIGH = 10;//高级速度
-    public static final int SPEED_MORE_HIGH = 13;//超高级速度
+    public static final int SPEED_MIDDLE = 15;//中级速度
+    public static final int SPEED_HIGH = 18;//高级速度
+    public static final int SPEED_MORE_HIGH = 22;//超高级速度
     private PiecesRectF[][] recfs = new PiecesRectF[5][4];//五行四列存矩形块
     private SparseArray<PiecesRectF> selectRecfs = new SparseArray<>();//储存点击的矩形块
     private int topRectHeight = 0;
@@ -33,6 +38,7 @@ public class StiackBlockView extends View {
     private boolean isStop = true;
     private int score;
     private int speed;//默认的滑动速度
+    private SoundUtils soundUtils;
 
     public int getSpeed() {
         return speed;
@@ -44,6 +50,7 @@ public class StiackBlockView extends View {
 
     public StiackBlockView(Context context) {
         this(context, null);
+
     }
 
     public StiackBlockView(Context context, @Nullable AttributeSet attrs) {
@@ -52,6 +59,8 @@ public class StiackBlockView extends View {
 
     public StiackBlockView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        soundUtils = SoundUtils.getInstance();
+        soundUtils.init(getContext());
         paint = new Paint();
         initRect();
     }
@@ -60,6 +69,7 @@ public class StiackBlockView extends View {
      * 初始化5行4列的矩形框
      */
     private void initRect() {
+
         /**
          * 创建4行4列的方块(每行1,2列最少有一个黑块，3,4列最少有一个黑块)
          */
@@ -85,10 +95,10 @@ public class StiackBlockView extends View {
             }
         }//创建第五行的数据，只需要一个类型为开始的矩形，其他的都是白色
         for (int i = 0; i < 4; i++) {
-            recfs[4][i]= new PiecesRectF(true);
-            if(i==1){
+            recfs[4][i] = new PiecesRectF(true);
+            if (i == 1) {
                 recfs[4][i].setType(PiecesRectF.START);
-            }else {
+            } else {
                 recfs[4][i].setType(PiecesRectF.WRITE);
             }
         }
@@ -110,7 +120,7 @@ public class StiackBlockView extends View {
         int w = getWidth() / 4;
         int h = getHeight() / 4;
         if (isGameOver) {
-            if(onBalckCheckListener !=null){
+            if (onBalckCheckListener != null) {
                 onBalckCheckListener.gameOver();
             }
             isGameOver = false;
@@ -173,10 +183,10 @@ public class StiackBlockView extends View {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        int index  =  event.getActionIndex();
-        switch (event.getActionMasked()){
+        int index = event.getActionIndex();
+        switch (event.getActionMasked()) {
             case ACTION_DOWN:
-            case MotionEvent.ACTION_POINTER_DOWN:{
+            case MotionEvent.ACTION_POINTER_DOWN: {
                 int id = event.getPointerId(index);
                 for (int i = 0; i < 5; i++) {
                     for (int j = 0; j < 4; j++) {
@@ -186,26 +196,29 @@ public class StiackBlockView extends View {
                             selectRecfs.put(id, f);
                             if (f.getType() == PiecesRectF.BLAKE) {
                                 f.setType(PiecesRectF.BLUE);
+                                soundUtils.play();
                                 score++;
                             } else if (f.getType() == PiecesRectF.WRITE) {
+                                soundUtils.playFail();
                                 f.setType(PiecesRectF.RED);
                                 isGameOver = true;
                                 postInvalidate();
                             } else if (f.getType() == PiecesRectF.START) {
                                 f.setType(PiecesRectF.BLUE);
+                                soundUtils.playStart();
                                 startThread();
                             }
-                            if(onBalckCheckListener !=null){
+                            if (onBalckCheckListener != null) {
                                 onBalckCheckListener.score(score);
                             }
                         }
 
                     }
-                    }
-
                 }
 
-                break;
+            }
+
+            break;
             case MotionEvent.ACTION_UP:
             case MotionEvent.ACTION_POINTER_UP: {
                 int id = event.getPointerId(index);
@@ -215,15 +228,18 @@ public class StiackBlockView extends View {
                     f.setType(PiecesRectF.WRITE);
                 }
             }
-                break;
+            break;
 
         }
         return true;
     }
 
+    /**
+     * 开启线程不断的对界面进行绘制
+     */
     private void startThread() {
 
-        new Thread(){
+        new Thread() {
             @Override
             public void run() {
 
@@ -231,15 +247,16 @@ public class StiackBlockView extends View {
                     /**
                      * 判断是否含有黑块接触屏幕底端
                      */
-                    if(topRectHeight>0){
-                        if(checkHasBlack()){
+                    if (topRectHeight > 0) {
+                        if (checkHasBlack()) {
                             isGameOver = true;
+                            soundUtils.playFail();
                             postInvalidate();
                             return;
                         }
                     }
                     topRectHeight += getSpeed();//固定的矩形下滑速度
-                    if(isGameOver){
+                    if (isGameOver) {
                         return;
                     }
                     if (topRectHeight > getHeight() / 4) {//如果顶层的方块高度超出清零
@@ -251,7 +268,7 @@ public class StiackBlockView extends View {
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
-                    postInvalidate();
+                    postInvalidate();//重绘
                 }
             }
         }.start();
@@ -259,12 +276,13 @@ public class StiackBlockView extends View {
 
     /**
      * 检查最后一行是否含有黑块
+     *
      * @return
      */
     private Boolean checkHasBlack() {
         Boolean hasBlack = false;
         for (int i = 0; i < 4; i++) {
-            if (recfs[4][i].getType() == PiecesRectF.BLAKE||recfs[4][i].getType() == PiecesRectF.START){
+            if (recfs[4][i].getType() == PiecesRectF.BLAKE || recfs[4][i].getType() == PiecesRectF.START) {
                 recfs[4][i].setType(PiecesRectF.RED);
                 hasBlack = true;
             }
@@ -275,46 +293,59 @@ public class StiackBlockView extends View {
     /**
      * 从倒数第二行开始跟新到未出现的第一行
      */
-    private void updateView(){
+    private void updateView() {
 
-        for (int i = 4; i >=0; i--) {
+        for (int i = 4; i >= 0; i--) {
             for (int j = 0; j < 4; j++) {
-                if(i==0){
+                if (i == 0) {
                     recfs[i][j] = new PiecesRectF();
-                    if (j == 1){
-                        if (recfs[i][j-1].getType() == PiecesRectF.BLAKE)
+                    if (j == 1) {
+                        if (recfs[i][j - 1].getType() == PiecesRectF.BLAKE)
                             recfs[i][j].setType(PiecesRectF.WRITE);
-                    }else if (j == 3){
-                        if (recfs[i][j-1].getType() == PiecesRectF.BLAKE)
+                    } else if (j == 3) {
+                        if (recfs[i][j - 1].getType() == PiecesRectF.BLAKE)
                             recfs[i][j].setType(PiecesRectF.WRITE);
-                        else if (recfs[i][j-2].getType() == PiecesRectF.WRITE &&
-                                recfs[i][j-3].getType() == PiecesRectF.WRITE)
+                        else if (recfs[i][j - 2].getType() == PiecesRectF.WRITE &&
+                                recfs[i][j - 3].getType() == PiecesRectF.WRITE)
                             recfs[i][j].setType(PiecesRectF.BLAKE);
                     }
-                }else{
-                    recfs[i][j] = recfs[i-1][j];
+                } else {
+                    recfs[i][j] = recfs[i - 1][j];
                 }
             }
         }
-        
+
     }
-    public void restart(){
+
+    /**
+     * 重新开始游戏
+     */
+    public void restart() {
         isGameOver = false;
-        topRectHeight= 0;//顶层高度归零
+        topRectHeight = 0;//顶层高度归零
         score = 0;//分数归零
         onBalckCheckListener.score(score);
         initRect();//重新初始化
         invalidate();//再次绘制
     }
 
-    public interface OnBalckCheckListener{
+    public interface OnBalckCheckListener {
         void score(int score);
+
         void gameOver();
     }
+
     private OnBalckCheckListener onBalckCheckListener;
 
-    public void setOnBalckCheckListener(OnBalckCheckListener onBalckCheckListener){
+    public void setOnBalckCheckListener(OnBalckCheckListener onBalckCheckListener) {
         this.onBalckCheckListener = onBalckCheckListener;
     }
 
+
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        L.e("资源释放",this);
+        soundUtils.release();
+    }
 }
