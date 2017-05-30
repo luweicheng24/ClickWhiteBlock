@@ -45,7 +45,7 @@ public class SoundUtils {
         for (int i = 0; i <sounds.length ; i++) {
             sp.load(context,sounds[i],1);
         }
-        sp.load(context,R.raw.fail,1);
+        sp.load(context,R.raw.failure,1);
         sp.load(context,R.raw.start,1);
     }
 

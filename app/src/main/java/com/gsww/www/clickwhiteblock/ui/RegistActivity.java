@@ -1,9 +1,11 @@
 package com.gsww.www.clickwhiteblock.ui;
 
-import android.app.ProgressDialog;
+import android.app.Dialog;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
@@ -18,6 +20,7 @@ import android.widget.Toast;
 import com.gsww.www.clickwhiteblock.R;
 import com.gsww.www.clickwhiteblock.bean.Person;
 import com.gsww.www.clickwhiteblock.utils.SPUtils;
+import com.gsww.www.clickwhiteblock.view.CustomProgressDialog;
 
 import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.SaveListener;
@@ -36,13 +39,22 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
     private Button but_regist;
     private String name;
     private String psw;
-    private ProgressDialog dialog;
     private int changeHeight;
     private ScrollView sv;
+    private Dialog mDialog;
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+       /* if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.LOLLIPOP){
+
+            getWindow().setStatusBarColor(Color.parseColor("#f44075fd"));
+            getWindow().getDecorView().setSystemUiVisibility(
+                    View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+            getWindow().setStatusBarColor(Color.TRANSPARENT);
+
+        }*/
         setContentView(R.layout.activity_regist);
         initView();
     }
@@ -62,16 +74,16 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
 
     @Override
     public void onClick(View v) {
-         InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
-        inputMethodManager.hideSoftInputFromWindow(getWindow().getDecorView().getWindowToken(),InputMethodManager.HIDE_NOT_ALWAYS);
-        dialog = new ProgressDialog(this);
-        dialog.setMessage("注册中...");
-        dialog.setCanceledOnTouchOutside(false);
-        name = et_phone.getText().toString();
-        psw = et_psw.getText().toString();
+        InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+        inputMethodManager.hideSoftInputFromWindow(getWindow().getDecorView().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+//文字即为显示的内容
+        mDialog = CustomProgressDialog.createLoadingDialog(this, "注册中...");
+        mDialog.setCancelable(false);//允许返回
+        name = et_phone.getText().toString().trim();
+        psw = et_psw.getText().toString().trim();
         if (!TextUtils.isEmpty(name)) {
             if (!TextUtils.isEmpty(name)) {
-                dialog.show();
+                mDialog.show();
                 Person p = new Person();
                 p.setPassword(psw);
                 p.setName(name);
@@ -90,30 +102,31 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
         p.save(new SaveListener<String>() {
             @Override
             public void done(String s, BmobException e) {
-              dialog.dismiss();
-              if(e!=null){
-                  Toast.makeText(RegistActivity.this, "注册成功", Toast.LENGTH_SHORT).show();
-                  Intent intent = new Intent(RegistActivity.this, LoginActivity.class);
-                  intent.putExtra("name", name);
-                  intent.putExtra("psw", psw);
-                  startActivity(intent);
-                  saveAccounts();
-                  finish();
-              }else{
-                  Toast.makeText(RegistActivity.this, "注册失败", Toast.LENGTH_SHORT).show();
-              }
+                mDialog.dismiss();
+                if (e != null) {
+                    Toast.makeText(RegistActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                    return;
+                } else {
+                    Toast.makeText(RegistActivity.this, "注册成功", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(RegistActivity.this, LoginActivity.class);
+                    intent.putExtra("name", name);
+                    intent.putExtra("psw", psw);
+                    startActivity(intent);
+                    saveAccounts();
+                    finish();
+                }
+
             }
         });
 
     }
 
     /**
-     *
      * 保存账号在SharePreference
      */
     private void saveAccounts() {
-        SPUtils.writeUser("name",name,this);
-        SPUtils.writeUser("password",psw,this);
+        SPUtils.writeUser("name", name, this);
+        SPUtils.writeUser("password", psw, this);
     }
 
     @Override
@@ -126,7 +139,6 @@ public class RegistActivity extends AppCompatActivity implements View.OnClickLis
                     sv.smoothScrollTo(0, sv.getHeight());
                 }
             });
-
 
 
         } else if (bottom != 0 && oldBottom != 0 && -change > changeHeight) {

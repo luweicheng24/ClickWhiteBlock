@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+<LinearLayout
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:background="@drawable/dialog_bottom_shape"
+    android:layout_height="wrap_content">
+    <TextView
+
+        android:id="@+id/tv_dialog_camera"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@drawable/dialog_bottom_item_shap"
+        android:gravity="center"
+        android:text="拍照"
+
+        android:textSize="20sp" />
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/colorPrimaryDark"
+        />
+
+    <TextView
+        android:id="@+id/tv_dialog_album"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@drawable/dialog_bottom_item_shap"
+        android:gravity="center"
+        android:text="相册选择"
+        android:textSize="20sp" />
+</LinearLayout>
+
+
+
+    <TextView
+
+        android:id="@+id/tv_dialog_cancel"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginTop="15dp"
+        android:background="@drawable/dialog_bottom_item_shap"
+        android:gravity="center"
+        android:text="取消"
+        android:textSize="20sp" />
+
+
+</LinearLayout>

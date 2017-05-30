@@ -36,7 +36,7 @@ public class MyPush extends BroadcastReceiver {
 
             NotificationManager manager= (NotificationManager) context.getSystemService(context.NOTIFICATION_SERVICE);
             Notification notification= new Notification.Builder(context).
-                    setSmallIcon(R.mipmap.ic_launcher).//设置推送消息的图标
+                    setSmallIcon(R.drawable.icon).//设置推送消息的图标
                     setContentTitle("您收到一条推送信息！") .//设置推送标题
                     setContentText(content).build();//设置推送内容
             manager.notify(1,notification);//设置通知栏

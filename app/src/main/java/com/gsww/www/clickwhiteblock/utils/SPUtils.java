@@ -14,17 +14,37 @@ import android.util.Log;
 public class SPUtils {
     public static final String TAG = "SharePreference";
     public static final String LOGIN = "login";
+    public static final String  FILE = "file";
+
+    private static  final String HEADER = "header";
 
     public static void writeUser(String key, String value, Context context) {
         SharedPreferences sp = context.getSharedPreferences(LOGIN, Context.MODE_PRIVATE);
         Boolean success = sp.edit().putString(key, value).commit();
-        Log.i(TAG, "writeMSG: 数据写入：" + success);
+        Log.i("sp", "writeMSG: 数据写入：" + success);
     }
 
     public static String getUser(String key, Context context) {
 
         SharedPreferences sp = context.getSharedPreferences(LOGIN, context.MODE_PRIVATE);
         String val = sp.getString(key, "默认值");
+        return val;
+    }
+    public  static Boolean clearUser(Context context){
+        SharedPreferences sp = context.getSharedPreferences(LOGIN,context.MODE_PRIVATE);
+        Boolean success = sp.edit().clear().commit();
+        return success;
+    }
+
+    public static void saveHeader(String value,Context context){
+        SharedPreferences sp = context.getSharedPreferences(FILE, Context.MODE_PRIVATE);
+        Boolean success = sp.edit().putString(HEADER, value).commit();
+        Log.i("sp", "writeMSG: 数据写入：" + success);
+    }
+    public static String getHeader( Context context) {
+
+        SharedPreferences sp = context.getSharedPreferences(FILE, context.MODE_PRIVATE);
+        String val = sp.getString(HEADER, "默认值");
         return val;
     }
 }
